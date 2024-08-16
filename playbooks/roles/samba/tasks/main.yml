@@ -1,0 +1,30 @@
+---
+- name: Create a shared directory
+  ansible.builtin.file:
+    path: /home/ubuntu/sambashare
+    state: directory
+    mode: "0755"
+    owner: ubuntu
+    group: ubuntu
+- name: Install Samba
+  package:
+    name: samba
+    state: present
+  when: ansible_facts['os_family'] == "Debian"
+- name: Configure smb.conf
+  template:
+    src: ../templates/smb.conf
+    dest: /etc/samba/smb.conf
+  notify: restart samba
+- name: set Samba passwords for each user
+  vars:
+    users:
+      - name: ubuntu
+        passwd: "{{ ubuntu_password }}"
+  shell: |-
+    printf '{{ item.passwd }}
+    {{ item.passwd }}
+    ' | smbpasswd -a {{ item.name }}
+  with_items:
+    - "{{ users }}"
+  tags: smbpasswd

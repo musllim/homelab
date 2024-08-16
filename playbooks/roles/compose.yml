@@ -1,0 +1,17 @@
+- name: Create a directory for {{ service_name }}
+  ansible.builtin.file:
+    path: /home/ubuntu/{{ service_name }}
+    state: directory
+    mode: "0755"
+    owner: ubuntu
+    group: ubuntu
+
+- name: Copy {{ service_name }} compose file
+  template:
+    src: docker-compose.{{ service_name }}.yml.j2
+    dest: /home/ubuntu/{{ service_name }}/docker-compose.yml
+
+- name: Stop and start {{ service_name }}
+  ansible.builtin.shell: docker-compose down && docker-compose up -d
+  args:
+    chdir: /home/ubuntu/{{ service_name }}/

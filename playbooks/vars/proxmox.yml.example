@@ -1,0 +1,19 @@
+---
+- proxmox_ip: ***
+- template_vm_id: ***
+- storage: ***
+- api_user: ***
+- node: ***
+- api_token_id: ***
+- template_vm_id: ***
+- api_token_secret: ***
+- vm_id: ***
+- netmask: ***
+- gateway: ***
+- servers:
+    - name: ***
+      ip: ***
+    - name: ***
+      ip: ***
+    - name: ***
+      ip: ***

@@ -1,0 +1,35 @@
+---
+- name: Clone VM template
+  community.general.proxmox_kvm:
+    api_host: "{{ proxmox_ip }}"
+    api_user: "{{ api_user }}"
+    node: "{{ node }}"
+    api_token_id: "{{ api_token_id }}"
+    api_token_secret: "{{ api_token_secret }}"
+    vmid: "{{ vm_id }}"
+    clone: "{{ template_vm_id }}"
+    name: "{{ item.name }}"
+    full: true
+    storage: "{{ storage }}"
+    state: present
+    timeout: 600
+  register: clone_result
+  
+- name: Display clone result
+  debug:
+    var: clone_result
+
+- name: Configure static IP using cloud-init
+  community.general.proxmox_kvm:
+    api_host: "{{ proxmox_ip }}"
+    api_user: "{{ api_user }}"
+    node: "{{ node }}"
+    api_token_id: "{{ api_token_id }}"
+    api_token_secret: "{{ api_token_secret }}"
+    vmid: "{{ clone_result.vmid }}"
+    ipconfig:
+      ipconfig0: "ip={{ item.ip }}/{{ netmask }},gw={{ gateway }}"
+    state: present
+    update: yes
+  when: clone_result is not failed  # Only configure if clone was successful
+

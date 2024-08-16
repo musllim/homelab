@@ -1,0 +1,6 @@
+---
+- name: Add server nodes
+  ansible.builtin.include_tasks: create_node.yml
+  loop: "{{ servers }}"
+  loop_control:
+    loop_var: item
