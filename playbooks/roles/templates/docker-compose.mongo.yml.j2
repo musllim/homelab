@@ -5,6 +5,7 @@ services:
     image: mongo:4.2.23-bionic
     container_name: mongodb
     hostname: mongodb
+    restart: always
     volumes:
       - mongodb-data:/data/db/
     environment:
