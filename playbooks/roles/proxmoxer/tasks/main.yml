@@ -8,3 +8,18 @@
     name:
       - python3-proxmoxer
     state: latest
+
+- name: create vm template
+  vars:
+    vm_name: "base-vm-template"
+    memory: 1024
+    cores: 1
+    net_config: "virtio,bridge=vmbr0"
+    ostype: "l26"
+    iso_image: "local:iso/ubuntu-20.04.6-live-server-amd64.iso"
+    disk_size: "32"
+
+  ansible.builtin.shell: |
+    qm create {{ template_vm_id }} --name {{ vm_name }} --memory {{ memory }} --cores {{ cores }} --net0 {{ net_config }} --ostype {{ ostype }} --boot c --bootdisk scsi0 --ide0 {{ iso_image }},media=cdrom &&
+        qm set {{ template_vm_id }} --scsi0 local:{{ disk_size }} --bootdisk scsi0 &&
+        qm template {{ template_vm_id }}
