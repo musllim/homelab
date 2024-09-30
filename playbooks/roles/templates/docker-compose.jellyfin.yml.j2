@@ -1,4 +1,3 @@
----
 version: "3"
 services:
   jellyfin:
@@ -9,9 +8,5 @@ services:
     volumes:
       - ./config:/config
       - ./cache:/cache
-      - /home/ubuntu/sambashare:/media
+      - ~/sambashare:/media
     restart: unless-stopped
-    extra_hosts:
-      - host.docker.internal:host-gateway
-    ports:
-      - "8096:8096"

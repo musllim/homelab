@@ -1,6 +1,6 @@
 - hosts: proxmox
   become: true
-  vars_files: proxmox.env.yml
+  vars_files: vars/proxmox.env.yml
   roles:
     - proxmoxer
     - nodes

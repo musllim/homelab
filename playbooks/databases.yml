@@ -4,7 +4,7 @@
   roles:
     - dockerd
   vars_files:
-    - databases.env.yml
+    - vars/databases.env.yml
   vars:
   tasks:
     - include_tasks: roles/compose.yml

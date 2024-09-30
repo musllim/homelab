@@ -1,11 +1,10 @@
 ---
 - name: Create a shared directory
   ansible.builtin.file:
-    path: /home/ubuntu/sambashare
+    path: ~/sambashare
     state: directory
     mode: "0755"
-    owner: ubuntu
-    group: ubuntu
+
 - name: Install Samba
   package:
     name: samba
@@ -19,8 +18,8 @@
 - name: set Samba passwords for each user
   vars:
     users:
-      - name: ubuntu
-        passwd: "{{ ubuntu_password }}"
+      - name: root
+        passwd: whyone
   shell: |-
     printf '{{ item.passwd }}
     {{ item.passwd }}

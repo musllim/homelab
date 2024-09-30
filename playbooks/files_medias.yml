@@ -2,7 +2,10 @@
 - name: Install and Configure Samba
   hosts: files_media
   become: yes
-  vars_files: files_media.env.yml
+  vars:
+    - user_password: whyone
+    - roles:
+        - jellyfin
   roles:
     - samba
     - dockerd
