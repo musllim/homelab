@@ -8,3 +8,16 @@
     name:
       - python3-proxmoxer
     state: latest
+# - name: create a cloud init template
+- name: Copy template script
+  template:
+    src: ../../templates/proxmox-template.sh.j2
+    dest: proxmox-template.sh
+
+- name: Ensure script has execute permission
+  file:
+    path: proxmox-template.sh
+    mode: '0755'
+
+- name: create a cloud init template
+  ansible.builtin.shell: ./proxmox-template.sh
