@@ -4,4 +4,4 @@
   become: true
   roles:
     - samba
-    - jellyfin
+    # - jellyfin

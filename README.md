@@ -1,4 +1,4 @@
-# Homelab
+# ITLab
 
 home lab for hosting services like databases, media servers, wordpress. Learning and experimentation with IT stuff proxmox ve became my go-to solution for provision VMs. I automated most of the things with ansible so that I can rebuild my lab in any case of hardware failure with few commands.
 

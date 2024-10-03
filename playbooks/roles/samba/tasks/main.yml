@@ -1,10 +1,4 @@
 ---
-- name: Create a shared directory
-  ansible.builtin.file:
-    path: ~/sambashare
-    state: directory
-    mode: "0755"
-
 - name: Install Samba
   package:
     name: samba
@@ -13,17 +7,27 @@
 - name: Configure smb.conf
   template:
     src: ../templates/smb.conf
-    dest: /etc/samba/smb.conf
+    dest: /etc/samba/smb.conf.tail
   notify: restart samba
-- name: set Samba passwords for each user
-  vars:
-    users:
-      - name: root
-        passwd: whyone
+
+- name: create clean new config
   shell: |-
-    printf '{{ item.passwd }}
-    {{ item.passwd }}
-    ' | smbpasswd -a {{ item.name }}
-  with_items:
-    - "{{ users }}"
-  tags: smbpasswd
+    cp /usr/share/samba/smb.conf /etc/samba/smb.conf
+
+- name: add smb.conf.tail
+  shell: |-
+    cat /etc/samba/smb.conf.tail >> /etc/samba/smb.conf
+
+- name: create share dirs
+  shell: |-
+    mkdir -p /srv/samba/share && chown nobody:nogroup /srv/samba/share/
+
+- name: restart samba
+  service:
+    name: smbd
+    state: restarted
+
+- name: restart samba
+  service:
+    name: nmbd
+    state: restarted

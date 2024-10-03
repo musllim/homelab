@@ -1,0 +1,8 @@
+---
+- name: Install coolify
+  hosts: coolify
+  become: true
+  tasks:
+  - name: create clean new config
+    shell: |-
+      curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash
