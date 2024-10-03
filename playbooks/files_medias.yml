@@ -1,16 +1,7 @@
 ---
 - name: Install and Configure Samba
   hosts: files_media
-  become: yes
-  vars:
-    - user_password: whyone
-    - roles:
-        - jellyfin
+  become: true
   roles:
     - samba
-    - dockerd
-  tasks:
-    - include_tasks: roles/compose.yml
-      with_items: "{{ roles }}"
-      vars:
-        service_name: "{{ item }}"
+    - jellyfin

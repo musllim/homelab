@@ -1,34 +1,50 @@
-    # - name: Download LXC template Debian 11
-    #   community.general.proxmox_template:
-    #     node: "{{ item }}"
-    #     api_host: pve3.local
-    #     api_user: "{{ proxmox_api_user }}"
-    #     api_token_id: "{{ proxmox_token_id }}"
-    #     api_token_secret: "{{ api_token_secret }}"
-    #     storage: local
-    #     content_type: vztmpl
-    #     template: debian-11-standard_11.7-1_amd64.tar.zst
-    #   loop:
-    #     - pve1
-    #     - pve2
-    #     - pve3
-    - name: Create VM {{ item.name }}
-      community.general.proxmox:
-        node: "{{ node }}"
-        hostname: "{{ item.name }}"
-        password: "{{ lxc_root_password }}"
-        api_host: "{{ proxmox_ip }}"
-        api_user: "{{ api_user }}"
-        api_token_id: "{{ api_token_id }}"
-        api_token_secret: "{{ api_token_secret }}"
-        storage: "{{ storage }}"
-        # ostemplate: 'local:vztmpl/debian-11-standard_11.7-1_amd64.tar.zst'
-        ostemplate: 'local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst'
-        pubkey: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
-        memory: 1024
-        swap: 0
-        # unprivileged: false
-        onboot: true
-        # state: absent
-        state: present
-        netif: '{"net0":"name=eth0,gw={{ gateway }},ip={{ item.ip }}/{{ netmask }},bridge=vmbr0"}'
+# - name: Download LXC template Debian 11
+#   community.general.proxmox_template:
+#     node: "{{ item }}"
+#     api_host: pve3.local
+#     api_user: "{{ proxmox_api_user }}"
+#     api_token_id: "{{ proxmox_token_id }}"
+#     api_token_secret: "{{ api_token_secret }}"
+#     storage: local
+#     content_type: vztmpl
+#     template: debian-11-standard_11.7-1_amd64.tar.zst
+#   loop:
+#     - pve1
+#     - pve2
+#     - pve3
+- name: Create VM {{ item.name }}
+  community.general.proxmox:
+    node: "{{ node }}"
+    hostname: "{{ item.name }}"
+    password: "{{ lxc_root_password }}"
+    api_host: "{{ proxmox_ip }}"
+    api_user: "{{ api_user }}"
+    api_token_id: "{{ api_token_id }}"
+    api_token_secret: "{{ api_token_secret }}"
+    storage: "{{ storage }}"
+    # ostemplate: 'local:vztmpl/debian-11-standard_11.7-1_amd64.tar.zst'
+    ostemplate: "local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
+    pubkey: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
+    memory: 1024
+    swap: 0
+    # unprivileged: false
+    onboot: true
+    # state: absent
+    state: present
+    netif: '{"net0":"name=eth0,gw={{ gateway }},ip={{ item.ip }}/{{ netmask }},bridge=vmbr0"}'
+  register: vm_result
+
+- name: Display VM creation result
+  debug:
+    var: vm_result
+
+- name: Start the VM
+  community.general.proxmox:
+    node: "{{ node }}"
+    api_host: "{{ proxmox_ip }}"
+    api_user: "{{ api_user }}"
+    api_token_id: "{{ api_token_id }}"
+    api_token_secret: "{{ api_token_secret }}"
+    vmid: "{{ vm_result.vmid }}"
+    state: started
+  when: vm_result is changed

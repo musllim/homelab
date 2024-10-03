@@ -5,7 +5,6 @@
     - dockerd
   vars_files:
     - vars/databases.env.yml
-  vars:
   tasks:
     - include_tasks: roles/compose.yml
       with_items: "{{ roles }}"
