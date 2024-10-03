@@ -1,23 +1,24 @@
----
-- name: Clone VM template
+- name: Verify VM template exists
   community.general.proxmox_kvm:
     api_host: "{{ proxmox_ip }}"
     api_user: "{{ api_user }}"
     node: "{{ node }}"
     api_token_id: "{{ api_token_id }}"
     api_token_secret: "{{ api_token_secret }}"
-    vmid: "{{ vm_id }}"
-    clone: "{{ template_vm_id }}"
-    name: "{{ item.name }}"
-    full: true
-    storage: "{{ storage }}"
+    vmid: "{{ template_vm_id }}"
     state: present
-    timeout: 600
-  register: clone_result
-  
-- name: Display clone result
-  debug:
-    var: clone_result
+  register: template_check
+  ignore_errors: true
+
+- name: Fail if template does not exist
+  fail:
+    msg: "VM template with ID {{ template_vm_id }} does not exist"
+  when: template_check is failed
+
+- name: Clone VM using qm command
+  ansible.builtin.shell:
+    cmd: "qm clone 9909 {{ item.vm_id }} --name {{ item.name }}"
+  delegate_to: "{{ proxmox_ip }}"
 
 - name: Configure static IP using cloud-init
   community.general.proxmox_kvm:
@@ -26,10 +27,8 @@
     node: "{{ node }}"
     api_token_id: "{{ api_token_id }}"
     api_token_secret: "{{ api_token_secret }}"
-    vmid: "{{ clone_result.vmid }}"
+    vmid: "{{ item.vm_id }}"
     ipconfig:
       ipconfig0: "ip={{ item.ip }}/{{ netmask }},gw={{ gateway }}"
     state: present
     update: yes
-  when: clone_result is not failed  # Only configure if clone was successful
-

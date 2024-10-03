@@ -1,0 +1,12 @@
+---
+- hosts: next_cloud
+  become: true
+  roles:
+    - dockerd
+  vars_files:
+    - vars/databases.env.yml
+  tasks:
+    - include_tasks: roles/compose.yml
+      with_items: "{{ roles }}"
+      vars:
+        service_name: "{{ item }}"
